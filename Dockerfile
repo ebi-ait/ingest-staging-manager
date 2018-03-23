@@ -4,7 +4,7 @@ MAINTAINER Simon Jupp "jupp@ebi.ac.uk"
 RUN mkdir /app
 WORKDIR /app
 ADD ingestbroker ./ingestbroker
-COPY stagingmanager.py requirements.txt ./
+COPY stagingmanager.py listener.py requirements.txt ./
 
 RUN pip install -r requirements.txt
 
