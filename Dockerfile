@@ -16,4 +16,4 @@ ENV STAGING_API_VERSION=v1
 ENV INGEST_API_KEY=key_not_set
 
 ENTRYPOINT ["python"]
-CMD ["staging-creator.py"]
+CMD ["stagingmanager.py"]
