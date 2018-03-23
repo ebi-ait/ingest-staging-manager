@@ -19,9 +19,7 @@ import ingestbroker.broker.ingestapi as ingestapi
 import ingestbroker.broker.stagingapi as stagingapi
 from listener import Listener
 
-DEFAULT_RABBIT_URL=os.environ.get('RABBIT_URL', 'amqp://localhost:5672')
-
-DEFAULT_QUEUE_NAME=os.environ.get('SUBMISSION_QUEUE_NAME', 'ingest.envelope.created.queue')
+DEFAULT_RABBIT_URL = os.path.expandvars(os.environ.get('RABBIT_URL', 'amqp://localhost:5672'))
 
 class StagingManager:
     def __init__(self):
