@@ -7,6 +7,10 @@ __author__ = "jupp"
 __license__ = "Apache 2.0"
 __date__ = "15/09/2017"
 
+import ingestbroker.broker.ingestapi as ingestapi
+import ingestbroker.broker.stagingapi as stagingapi
+from listener import Listener
+
 import json
 import logging
 import os
@@ -15,16 +19,14 @@ import threading
 import time
 from optparse import OptionParser
 
-import ingestbroker.broker.ingestapi as ingestapi
-import ingestbroker.broker.stagingapi as stagingapi
-from listener import Listener
-
 DEFAULT_RABBIT_URL = os.path.expandvars(os.environ.get('RABBIT_URL', 'amqp://localhost:5672'))
+
 
 class StagingManager:
     def __init__(self):
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        logging.basicConfig(level=logging.INFO, formatter=formatter)
+        log_format = ' %(asctime)s  - %(name)s - %(levelname)s in %(filename)s:%(lineno)s %(funcName)s(): %(message)s'
+        logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=log_format)
+
         self.logger = logging.getLogger(__name__)
         self.ingest_api = ingestapi.IngestApi()
         self.staging_api = stagingapi.StagingApi()
@@ -40,7 +42,8 @@ class StagingManager:
             self.logger.info("Creating upload area for submission " + uuid)
 
             upload_area_credentials = self.staging_api.createStagingArea(uuid)
-            self.logger.info("Upload area created! patching creds to subs envelope "+json.dumps(upload_area_credentials))
+            self.logger.info(
+                "Upload area created! patching creds to subs envelope " + json.dumps(upload_area_credentials))
             self.ingest_api.updateSubmissionWithStagingCredentials(submission_url, uuid, upload_area_credentials["urn"])
 
     def delete_upload_area(self, body):
@@ -69,7 +72,8 @@ class StagingManager:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    log_format = ' %(asctime)s  - %(name)s - %(levelname)s in %(filename)s:%(lineno)s %(funcName)s(): %(message)s'
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=log_format)
 
     parser = OptionParser()
     parser.add_option("-q", "--queue", help="name of the ingest queues to listen for submission")
@@ -82,11 +86,11 @@ if __name__ == '__main__':
     # start a listener for creating new upload are
     create_listener = Listener({
         'rabbit': DEFAULT_RABBIT_URL,
-        'callback_function': staging_manager.create_upload_area,
+        'on_message_callback': staging_manager.create_upload_area,
         'exchange': 'ingest.envelope.created.exchange',
         'exchange_type': 'fanout',
         'queue': 'ingest.envelope.created.queue',
-        'routing_key' : 'ingest.envelope.created.queue'
+        'routing_key': 'ingest.envelope.created.queue'
     })
     t = threading.Thread(target=create_listener.run)
     t.start()
@@ -94,7 +98,7 @@ if __name__ == '__main__':
     # start a listener for deleting upload area
     delete_listener = Listener({
         'rabbit': DEFAULT_RABBIT_URL,
-        'callback_function': staging_manager.delete_upload_area,
+        'on_message_callback': staging_manager.delete_upload_area,
         'exchange': 'ingest.envelope.cleanup.exchange',
         'exchange_type': 'fanout',
         'queue': 'ingest.envelope.cleanup.queue',

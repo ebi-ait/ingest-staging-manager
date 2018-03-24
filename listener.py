@@ -33,7 +33,7 @@ class Listener:
         self._consumer_tag = None
 
         self._url = params["rabbit"]
-        self._callback_function = params["callback_function"]
+        self._on_message_callback = params["on_message_callback"]
 
         self.EXCHANGE = params["exchange"]
         self.EXCHANGE_TYPE = params["exchange_type"]
@@ -268,7 +268,7 @@ class Listener:
         LOGGER.info('Received message # %s from %s: %s',
                     basic_deliver.delivery_tag, properties.app_id, body)
         try:
-            self._callback_function(body)
+            self._on_message_callback(body)
             self.acknowledge_message(basic_deliver.delivery_tag)
         except Exception as e:
             LOGGER.error(e)
