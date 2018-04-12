@@ -55,7 +55,9 @@ class StagingManager:
             submission_uuid = self.ingest_api.getObjectUuid(submission_url)
 
             if self.staging_api.hasStagingArea(submission_uuid):
-                self.staging_api.deleteStagingArea(submission_uuid)
+                # TODO commenting out this for now as we just want to set the submission to COMPLETE without deleting the upload area
+                # confirming with blue box when is it safest to DELETE it when using the hca dss client python lib
+                # self.staging_api.deleteStagingArea(submission_uuid)
                 self.logger.info("Upload area deleted!")
                 self.set_submission_to_complete(submission_id)
             else:
@@ -87,10 +89,10 @@ if __name__ == '__main__':
     create_listener = Listener({
         'rabbit': DEFAULT_RABBIT_URL,
         'on_message_callback': staging_manager.create_upload_area,
-        'exchange': 'ingest.envelope.created.exchange',
-        'exchange_type': 'fanout',
+        'exchange': 'ingest.envelope.exchange',
+        'exchange_type': 'topic',
         'queue': 'ingest.envelope.created.queue',
-        'routing_key': 'ingest.envelope.created.queue'
+        'routing_key': 'ingest.envelope.create'
     })
     t = threading.Thread(target=create_listener.run)
     t.start()
@@ -99,10 +101,10 @@ if __name__ == '__main__':
     delete_listener = Listener({
         'rabbit': DEFAULT_RABBIT_URL,
         'on_message_callback': staging_manager.delete_upload_area,
-        'exchange': 'ingest.envelope.cleanup.exchange',
-        'exchange_type': 'fanout',
+        'exchange': 'ingest.envelope.exchange',
+        'exchange_type': 'topic',
         'queue': 'ingest.envelope.cleanup.queue',
-        'routing_key': 'ingest.envelope.cleanup.queue'
+        'routing_key': 'ingest.envelope.cleanup'
     })
 
     t = threading.Thread(target=delete_listener.run)
