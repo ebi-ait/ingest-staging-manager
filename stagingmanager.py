@@ -55,9 +55,7 @@ class StagingManager:
             submission_uuid = self.ingest_api.getObjectUuid(submission_url)
 
             if self.staging_api.hasStagingArea(submission_uuid):
-                # TODO commenting out this for now as we just want to set the submission to COMPLETE without deleting the upload area
-                # confirming with blue box when is it safest to DELETE it when using the hca dss client python lib
-                # self.staging_api.deleteStagingArea(submission_uuid)
+                self.staging_api.deleteStagingArea(submission_uuid)
                 self.logger.info("Upload area deleted!")
                 self.set_submission_to_complete(submission_id)
             else:
