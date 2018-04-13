@@ -92,7 +92,7 @@ if __name__ == '__main__':
         'exchange': 'ingest.upload.area.exchange',
         'exchange_type': 'topic',
         'queue': 'ingest.upload.area.create.queue',
-        'routing_key': 'ingest.upload.area.cleanup'
+        'routing_key': 'ingest.upload.area.create'
     })
     t = threading.Thread(target=create_listener.run)
     t.start()
