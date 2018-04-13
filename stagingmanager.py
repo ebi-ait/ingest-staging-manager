@@ -89,10 +89,10 @@ if __name__ == '__main__':
     create_listener = Listener({
         'rabbit': DEFAULT_RABBIT_URL,
         'on_message_callback': staging_manager.create_upload_area,
-        'exchange': 'ingest.envelope.exchange',
+        'exchange': 'ingest.upload.area.exchange',
         'exchange_type': 'topic',
-        'queue': 'ingest.envelope.created.queue',
-        'routing_key': 'ingest.envelope.create'
+        'queue': 'ingest.upload.area.create.queue',
+        'routing_key': 'ingest.upload.area.cleanup'
     })
     t = threading.Thread(target=create_listener.run)
     t.start()
@@ -101,10 +101,10 @@ if __name__ == '__main__':
     delete_listener = Listener({
         'rabbit': DEFAULT_RABBIT_URL,
         'on_message_callback': staging_manager.delete_upload_area,
-        'exchange': 'ingest.envelope.exchange',
+        'exchange': 'ingest.upload.area.exchange',
         'exchange_type': 'topic',
-        'queue': 'ingest.envelope.cleanup.queue',
-        'routing_key': 'ingest.envelope.cleanup'
+        'queue': 'ingest.upload.area.cleanup.queue',
+        'routing_key': 'ingest.upload.area.cleanup'
     })
 
     t = threading.Thread(target=delete_listener.run)
