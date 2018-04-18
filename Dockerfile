@@ -4,7 +4,7 @@ MAINTAINER Simon Jupp "jupp@ebi.ac.uk"
 RUN mkdir /app
 WORKDIR /app
 ADD ingestbroker ./ingestbroker
-COPY staging-creator.py requirements.txt ./
+COPY stagingmanager.py listener.py requirements.txt ./
 
 RUN pip install -r requirements.txt
 
@@ -16,4 +16,4 @@ ENV STAGING_API_VERSION=v1
 ENV INGEST_API_KEY=key_not_set
 
 ENTRYPOINT ["python"]
-CMD ["staging-creator.py"]
+CMD ["stagingmanager.py"]
