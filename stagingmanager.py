@@ -55,8 +55,9 @@ class StagingManager:
             submission_uuid = self.ingest_api.getObjectUuid(submission_url)
 
             if self.staging_api.hasStagingArea(submission_uuid):
-                self.staging_api.deleteStagingArea(submission_uuid)
-                self.logger.info("Upload area deleted!")
+                # TODO commenting out for now as analysis bundle export is failing when referencing input data files
+                # self.staging_api.deleteStagingArea(submission_uuid)
+                # self.logger.info("Upload area deleted!")
                 self.set_submission_to_complete(submission_id)
             else:
                 self.logger.error("There is no upload area found.")
