@@ -1,3 +1,3 @@
 requests
 pika
-hca-ingest
+hca-ingest==0.4
