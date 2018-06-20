@@ -46,7 +46,7 @@ class StagingManager:
             upload_area_credentials = self.staging_api.createStagingArea(uuid)
             self.logger.info(
                 "Upload area created! patching creds to subs envelope " + json.dumps(upload_area_credentials))
-            self.ingest_api.updateSubmissionWithStagingCredentials(submission_url, uuid, upload_area_credentials["urn"])
+            self.ingest_api.updateSubmissionWithStagingCredentials(submission_url, uuid, upload_area_credentials["uri"])
 
     def delete_upload_area(self, body):
         message = json.loads(body)
