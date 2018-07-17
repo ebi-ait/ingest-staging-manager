@@ -7,9 +7,6 @@ __author__ = "jupp"
 __license__ = "Apache 2.0"
 __date__ = "15/09/2017"
 
-import ingestbroker.broker.ingestapi as ingestapi
-import ingestbroker.broker.stagingapi as stagingapi
-from listener import Listener
 
 import json
 import logging
@@ -18,6 +15,11 @@ import sys
 import threading
 import time
 from optparse import OptionParser
+
+from ingest.api.ingestapi import IngestApi
+from ingest.api.stagingapi import StagingApi
+
+from listener import Listener
 
 DEFAULT_RABBIT_URL = os.path.expandvars(os.environ.get('RABBIT_URL', 'amqp://localhost:5672'))
 
@@ -28,8 +30,8 @@ class StagingManager:
         logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=log_format)
 
         self.logger = logging.getLogger(__name__)
-        self.ingest_api = ingestapi.IngestApi()
-        self.staging_api = stagingapi.StagingApi()
+        self.ingest_api = IngestApi()
+        self.staging_api = StagingApi()
 
     def create_upload_area(self, body):
         message = json.loads(body)
@@ -44,7 +46,7 @@ class StagingManager:
             upload_area_credentials = self.staging_api.createStagingArea(uuid)
             self.logger.info(
                 "Upload area created! patching creds to subs envelope " + json.dumps(upload_area_credentials))
-            self.ingest_api.updateSubmissionWithStagingCredentials(submission_url, uuid, upload_area_credentials["urn"])
+            self.ingest_api.updateSubmissionWithStagingCredentials(submission_url, uuid, upload_area_credentials["uri"])
 
     def delete_upload_area(self, body):
         message = json.loads(body)
