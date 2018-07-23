@@ -1,9 +1,16 @@
 FROM python:3-alpine
 MAINTAINER Simon Jupp "jupp@ebi.ac.uk"
 
+# added for dependency healthchecks
+RUN apk update && \
+    apk add curl
+
 RUN mkdir /app
 WORKDIR /app
 COPY stagingmanager.py listener.py requirements.txt ./
+
+COPY start_up.sh ./
+RUN chmod +x start_up.sh
 
 RUN pip install -r requirements.txt
 
@@ -14,5 +21,4 @@ ENV STAGING_API=https://staging.staging.data.humancellatlas.org
 ENV STAGING_API_VERSION=v1
 ENV INGEST_API_KEY=key_not_set
 
-ENTRYPOINT ["python"]
-CMD ["stagingmanager.py"]
+ENTRYPOINT ["./start_up.sh"]
