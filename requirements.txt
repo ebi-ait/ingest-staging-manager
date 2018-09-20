@@ -1,3 +1,3 @@
 requests
 pika
-e "git+https://github.com/HumanCellAtlas/ingest-client.git@d2737161e0565d95bf39451999439a0eaf2404e8#egg=hca_ingest"
+-e "git+https://github.com/HumanCellAtlas/ingest-client.git@d2737161e0565d95bf39451999439a0eaf2404e8#egg=hca_ingest"
