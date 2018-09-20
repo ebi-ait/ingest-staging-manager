@@ -3,7 +3,11 @@ MAINTAINER Simon Jupp "jupp@ebi.ac.uk"
 
 # added for dependency healthchecks
 RUN apk update && \
-    apk add curl
+    apk add curl && \
+    apk add build-base && \
+    apk add openssl-dev && \
+    apk add libffi-dev && \
+    apk add git
 
 RUN mkdir /app
 WORKDIR /app
