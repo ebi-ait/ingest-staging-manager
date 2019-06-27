@@ -3,6 +3,9 @@
 Listens for messages from ingest to create a staging area, post back the credentials for uploading
 files to the staging area
 """
+from ingest.api.ingestapi import IngestApi
+from ingest.api.stagingapi import StagingApi
+
 __author__ = "jupp"
 __license__ = "Apache 2.0"
 __date__ = "15/09/2017"
@@ -16,8 +19,6 @@ import threading
 import time
 from optparse import OptionParser
 
-from ingest.api.ingestapi import IngestApi
-from ingest.api.stagingapi import StagingApi
 
 from listener import Listener
 
