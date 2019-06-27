@@ -46,7 +46,7 @@ class StagingManager:
             upload_area_credentials = self.staging_api.createStagingArea(uuid)
             self.logger.info(
                 "Upload area created! patching creds to subs envelope " + json.dumps(upload_area_credentials))
-            self.ingest_api.updateSubmissionWithStagingCredentials(submission_url, uuid, upload_area_credentials["uri"])
+            self.ingest_api.update_staging_details(submission_url, uuid, upload_area_credentials["uri"])
 
     def delete_upload_area(self, body):
         message = json.loads(body)
@@ -66,7 +66,7 @@ class StagingManager:
     def set_submission_to_complete(self, submission_id):
         for i in range(1, 5):
             try:
-                self.ingest_api.updateSubmissionState(submission_id, 'complete')
+                self.ingest_api.update_submission_state(submission_id, 'complete')
                 self.logger.info('Submission status is set to COMPLETE')
             except Exception:
                 self.logger.info("failed to set state of submission {0} to Complete, retrying...".format(submission_id))
