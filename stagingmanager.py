@@ -5,6 +5,7 @@ files to the staging area
 """
 from ingest.api.ingestapi import IngestApi
 from ingest.api.stagingapi import StagingApi
+from ingest.exporter.staging import StagingService, StagingInfoRepository
 
 __author__ = "jupp"
 __license__ = "Apache 2.0"
@@ -33,6 +34,7 @@ class StagingManager:
         self.logger = logging.getLogger(__name__)
         self.ingest_api = IngestApi()
         self.staging_api = StagingApi()
+        self.staging_service = StagingService(self.staging_api, StagingInfoRepository(self.ingest_api))
 
     def create_upload_area(self, body):
         message = json.loads(body)
@@ -58,7 +60,7 @@ class StagingManager:
             submission_uuid = self.ingest_api.get_object_uuid(submission_url)
             self.logger.info("Trying to delete the upload area for submission_uuid: " + submission_uuid)
             if self.staging_api.hasStagingArea(submission_uuid):
-                self.staging_api.deleteStagingArea(submission_uuid)
+                self.staging_service.cleanup_staging_area(submission_uuid)
                 self.logger.info("Upload area deleted!")
                 self.set_submission_to_complete(submission_id)
             else:
