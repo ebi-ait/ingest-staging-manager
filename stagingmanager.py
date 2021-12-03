@@ -60,9 +60,9 @@ class StagingManager:
             if self.staging_api.hasStagingArea(submission_uuid):
                 self.staging_api.deleteStagingArea(submission_uuid)
                 self.logger.info("Upload area deleted!")
-                self.set_submission_to_complete(submission_id)
             else:
-                self.logger.error("There is no upload area found.")
+                self.logger.warn("There is no upload area found.")
+            self.set_submission_to_complete(submission_id)
 
     def set_submission_to_complete(self, submission_id):
         for i in range(1, 5):
