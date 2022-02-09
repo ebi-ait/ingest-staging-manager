@@ -57,8 +57,7 @@ class StagingManager:
 
         if "documentId" in message:
             submission_id = message["documentId"]
-            submission_url = self.ingest_api.get_submission_url(submission_id)
-            submission_uuid = self.ingest_api.get_object_uuid(submission_url)
+            submission_uuid = message["documentUuid"]
             self.logger.info("Trying to delete the upload area for submission_uuid: " + submission_uuid)
             if self.staging_api.hasStagingArea(submission_uuid):
                 self.staging_api.deleteStagingArea(submission_uuid)
