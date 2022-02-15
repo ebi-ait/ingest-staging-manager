@@ -271,7 +271,7 @@ class Listener:
             self._on_message_callback(body)
             self.acknowledge_message(basic_deliver.delivery_tag)
         except Exception as e:
-            LOGGER.error(e)
+            LOGGER.exception(e)
 
     def acknowledge_message(self, delivery_tag):
         """Acknowledge the message delivery from RabbitMQ by sending a

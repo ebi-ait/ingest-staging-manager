@@ -3,6 +3,8 @@
 Listens for messages from ingest to create a staging area, post back the credentials for uploading
 files to the staging area
 """
+from http import HTTPStatus
+
 from ingest.api.ingestapi import IngestApi
 from ingest.api.stagingapi import StagingApi
 
@@ -19,6 +21,7 @@ import threading
 import time
 from optparse import OptionParser
 
+from requests import HTTPError
 
 from listener import Listener
 
@@ -54,15 +57,24 @@ class StagingManager:
 
         if "documentId" in message:
             submission_id = message["documentId"]
-            submission_url = self.ingest_api.get_submission_url(submission_id)
-            submission_uuid = self.ingest_api.get_object_uuid(submission_url)
+            submission_uuid = message["documentUuid"]
             self.logger.info("Trying to delete the upload area for submission_uuid: " + submission_uuid)
             if self.staging_api.hasStagingArea(submission_uuid):
                 self.staging_api.deleteStagingArea(submission_uuid)
                 self.logger.info("Upload area deleted!")
-                self.set_submission_to_complete(submission_id)
             else:
-                self.logger.error("There is no upload area found.")
+                self.logger.warning("There is no upload area found.")
+
+            if self._get_submission(submission_uuid):
+                self.set_submission_to_complete(submission_id)
+
+    def _get_submission(self, submission_uuid):
+        try:
+            submission = self.ingest_api.get_submission_by_uuid(submission_uuid)
+        except HTTPError as httpError:
+            if httpError.response.status_code == HTTPStatus.NOT_FOUND:
+                submission = None
+        return submission
 
     def set_submission_to_complete(self, submission_id):
         for i in range(1, 5):
