@@ -21,6 +21,8 @@ import threading
 import time
 from optparse import OptionParser
 
+from ingest.utils.s2s_token_client import ServiceCredential, S2STokenClient
+from ingest.utils.token_manager import TokenManager
 from requests import HTTPError
 
 from listener import Listener
@@ -34,7 +36,8 @@ class StagingManager:
         logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=log_format)
 
         self.logger = logging.getLogger(__name__)
-        self.ingest_api = IngestApi()
+        token_manager = self.init_token_manager()
+        self.ingest_api = IngestApi(token_manager=token_manager)
         self.staging_api = StagingApi()
 
     def create_upload_area(self, body):
@@ -84,6 +87,14 @@ class StagingManager:
             except Exception:
                 self.logger.info("failed to set state of submission {0} to Complete, retrying...".format(submission_id))
                 time.sleep(1)
+    @staticmethod
+    def init_token_manager():
+        gcp_credentials_file = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+        credential = ServiceCredential.from_file(gcp_credentials_file)
+        audience = os.environ.get('INGEST_API_JWT_AUDIENCE')
+        s2s_token_client = S2STokenClient(credential, audience)
+        token_manager = TokenManager(s2s_token_client)
+        return token_manager
 
 
 if __name__ == '__main__':
