@@ -77,6 +77,8 @@ class StagingManager:
         except HTTPError as httpError:
             if httpError.response.status_code == HTTPStatus.NOT_FOUND:
                 submission = None
+            else:
+                raise RuntimeError(f'error getting submission {submission_uuid}: {httpError}') from httpError
         return submission
 
     def set_submission_to_complete(self, submission_id):
